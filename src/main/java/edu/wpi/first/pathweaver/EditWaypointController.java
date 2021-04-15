@@ -6,15 +6,18 @@ import edu.wpi.first.pathweaver.global.CurrentSelections;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Control;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyEvent;
 import javafx.util.converter.NumberStringConverter;
 
 @SuppressWarnings("PMD.UnusedPrivateMethod")
 public class EditWaypointController {
+  @FXML
+  private ListView listView;
   @FXML
   private TextField xPosition;
   @FXML
@@ -29,13 +32,20 @@ public class EditWaypointController {
   private CheckBox reverseSpline;
   @FXML
   private TextField pointName;
+  @FXML
+  private Button javaExport;
+  @FXML
+  private Button cExport;
 
   private List<Control> controls;
   private ChangeListener<String> nameListener;
 
+  final Clipboard clipboard = Clipboard.getSystemClipboard();
+  final ClipboardContent content = new ClipboardContent();
+
   @FXML
   private void initialize() {
-    controls = List.of(xPosition, yPosition, tangentX, tangentY, lockedTangent, pointName, reverseSpline);
+    controls = List.of(listView, xPosition, yPosition, tangentX, tangentY, lockedTangent, pointName, reverseSpline, javaExport, cExport);
     controls.forEach(control -> control.setDisable(true));
     List<TextField> textFields = List.of(xPosition, yPosition, tangentX, tangentY);
     textFields.forEach(textField -> textField.setTextFormatter(FxUtils.onlyDoubleText()));
@@ -182,5 +192,23 @@ public class EditWaypointController {
   private void lockTangentOnEdit() {
     tangentY.setOnKeyTyped((KeyEvent event) -> lockedTangent.setSelected(true));
     tangentX.setOnKeyTyped((KeyEvent event) -> lockedTangent.setSelected(true));
+  }
+
+  @FXML
+  private void handleJavaExport() {
+    String baseString = "var %s = new ControlVector(new double[] {%f, %f}, new double[] {%f, %f});";
+    var wp = CurrentSelections.getCurWaypoint();
+    String clipStr = String.format(baseString, wp.getName(), wp.getX(), wp.getTangentX(), wp.getY(), wp.getTangentY());
+    content.putString(clipStr);
+    clipboard.setContent(content);
+  }
+
+  @FXML
+  private void handleCExport() {
+    String baseString = "ControlVector %s{{%f, %f}, {%f, %f}};";
+    var wp = CurrentSelections.getCurWaypoint();
+    String clipStr = String.format(baseString, wp.getName(), wp.getX(), wp.getTangentX(), wp.getY(), wp.getTangentY());
+    content.putString(clipStr);
+    clipboard.setContent(content);
   }
 }
