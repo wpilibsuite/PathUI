@@ -24,7 +24,6 @@ public final class PathIOUtil {
   private PathIOUtil() {
   }
 
-
   /**
    * Exports path object to csv file.
    *
@@ -33,7 +32,7 @@ public final class PathIOUtil {
    *
    * @return true if successful file write was preformed
    */
-  public static boolean export(String fileLocation, Path path) {
+  public static boolean export(String fileLocation, Path path, double yoffset) {
     try (
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(fileLocation + path.getPathName()));
 
@@ -42,7 +41,7 @@ public final class PathIOUtil {
     ) {
       for (Waypoint wp : path.getWaypoints()) {
         double xPos = wp.getX();
-        double yPos = wp.getY();
+        double yPos = wp.getY() + yoffset;
         double tangentX = wp.getTangentX();
         double tangentY = wp.getTangentY();
         String name = wp.getName();

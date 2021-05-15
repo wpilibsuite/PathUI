@@ -364,13 +364,20 @@ public class MainController {
 
       java.nio.file.Path pathNameFile = output.resolve(path.getPathNameNoExtension());
 
-      if(!path.getSpline().writeToFile(pathNameFile)) {
+      if(!path.getSpline().writePathToFile(path)) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         FxUtils.applyDarkMode(alert);
         alert.setTitle("Path export failure!");
         alert.setContentText("Could not export to: " + output.toAbsolutePath());
       }
+
+      if(!path.getSpline().writeToFile(pathNameFile)) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Trajectory export failure!");
+        alert.setContentText("Could not export to: " + output.toAbsolutePath());
+      }
     }
+
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
     FxUtils.applyDarkMode(alert);
     alert.setTitle("Paths exported!");

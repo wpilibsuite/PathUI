@@ -1,9 +1,9 @@
 package edu.wpi.first.pathweaver.spline;
 
+import edu.wpi.first.pathweaver.path.Path;
+
 import edu.wpi.first.pathweaver.global.CurrentSelections;
 import javafx.scene.Group;
-
-import java.nio.file.Path;
 
 /**
  * This interface represents a Spline - the function that describes the path
@@ -62,5 +62,12 @@ public interface Spline {
    * @param path the path of the file to write to
    * @return whether the write succeeded
    */
-  boolean writeToFile(Path path);
+  boolean writeToFile(java.nio.file.Path path);
+
+  /**
+   * Export this path to a file for use in the robot.
+   * @param path the path of the file to write to
+   * @return whether the write succeeded
+   */
+  boolean writePathToFile(Path path);
 }
