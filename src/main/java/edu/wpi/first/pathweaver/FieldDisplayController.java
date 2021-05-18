@@ -12,6 +12,7 @@ import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -20,6 +21,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.transform.Scale;
+import javafx.util.Duration;
 
 @SuppressWarnings("PMD.UnusedPrivateMethod")
 public class FieldDisplayController {
@@ -45,7 +47,14 @@ public class FieldDisplayController {
         field = ProjectPreferences.getInstance().getField();
         Image image = field.getImage();
         backgroundImage.setImage(image);
-        topPane.getStyleClass().add("pane");
+        Tooltip tooltip = new Tooltip();
+        Tooltip.install(topPane, tooltip);
+        tooltip.setShowDelay(Duration.seconds(0.0));
+        tooltip.setHideDelay(Duration.seconds(999999.0));
+        drawPane.setOnMouseMoved(e -> {
+                tooltip.setText("X: " + roundToString(e.getX()) + " / Y: " + roundToString(e.getY()));
+                tooltip.show(topPane, e.getSceneX(), e.getSceneY());
+                });
         Scale scale = new Scale();
         scale.xProperty().bind(Bindings.createDoubleBinding(() ->
                         Math.min(topPane.getWidth() / image.getWidth(), topPane.getHeight() / image.getHeight()),
@@ -171,5 +180,10 @@ public class FieldDisplayController {
     public boolean checkBounds(double x, double y) {
         //Convert waypoint convention to JavaFX
         return drawPane.getLayoutBounds().contains(x, -y);
+    }
+
+    private String roundToString(Double number) {
+        number = Math.round(number * 100.0) / 100.0;
+        return String.valueOf(number);
     }
 }
