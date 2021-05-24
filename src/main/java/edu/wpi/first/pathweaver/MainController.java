@@ -14,6 +14,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -335,9 +336,16 @@ public class MainController {
   private void createPath() {
     String name = MainIOUtil.getValidFileName(pathDirectory, "Unnamed", ".path");
     MainIOUtil.addChild(pathRoot, name);
-    Path newPath = new WpilibPath(name);
-    // The default path defaults to FEET
-    newPath.convertUnit(PathUnits.FOOT, ProjectPreferences.getInstance().getValues().getLengthUnit());
+    Path newPath;
+    Waypoint currentWaypoint = CurrentSelections.getCurWaypoint();
+    if (currentWaypoint == null) { // have nothing selected
+      newPath = new WpilibPath(name);
+      // The default path defaults to FEET
+      newPath.convertUnit(PathUnits.FOOT, ProjectPreferences.getInstance().getValues().getLengthUnit());
+    } else {
+      newPath = new WpilibPath(new Point2D(currentWaypoint.getX(), currentWaypoint.getY()), new Point2D(8, -4),
+          new Point2D(currentWaypoint.getTangentX(), currentWaypoint.getTangentY()), new Point2D(0, 1), name);
+    }
     SaveManager.getInstance().saveChange(newPath);
   }
 
